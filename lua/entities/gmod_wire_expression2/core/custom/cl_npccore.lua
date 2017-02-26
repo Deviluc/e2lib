@@ -1,0 +1,1 @@
+E2Helper.Descriptions["npcKill"] = "Kills any killable npc"
