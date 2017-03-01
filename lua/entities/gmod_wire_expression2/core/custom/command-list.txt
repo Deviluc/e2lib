@@ -106,10 +106,7 @@ Weapon:
 	E2Helper.Descriptions["getWeapon"] = "Returns the player's weapon entity by weapon name"
 	E2Helper.Descriptions["selectWeapon"] = "Select's the player's active weapon"
 	E2Helper.Descriptions["setClip1"] = "Select's the player's Clip1 amount"
-	E2Helper.Descriptions["weapSetMaterial"] = "Sets the weapon's material"
-
-	
-												
+	E2Helper.Descriptions["weapSetMaterial"] = "Sets the weapon's material"										
 
 NPC:
 	E2Helper.Descriptions["npcKill"] = "Kills any killable npc"
