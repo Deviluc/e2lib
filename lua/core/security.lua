@@ -1,46 +1,39 @@
-if not Security then return end
+AddCSLuaFile()
 
--- _G.Security = {}
+Security = Security or {}
 
-local cores = {}
+local functions = {}
 local lastReset = CurTime()
 
-hook.Add("think", "resetExecutions", function()
-	if (lastReset - CurTime) >= 1 then
-		for core,funcs in pairs(cores) do
-			for k,v in pairs(funcs) do v.executions = 0 end
-		end
-
+hook.Add("Think", "resetExecutions", function()
+	if (CurTime() - lastReset) >= 1 then
+		for funcSig,func in pairs(functions) do func.executions = 0 end
 		lastReset = CurTime()
 	end
 end)
 
-function Security.registerCore(coreName)
-	cores[coreName] = {}
-end
-
 -- Register the amount of times a certain function can be run per second (Min: 1)
-function Security.registerLimit(coreName, functionName, amountPerSecond)
+function Security.registerLimit(coreName, functionSignature, amountPerSecond)
 	if amountPerSecond < 1 then
 		error("The amount per second must be greater then or equal to 1!")
 	end
 
-	if cores[coreName][functionName] == nil then cores[coreName][functionName] = {} end
+	if functions[functionSignature] == nil then functions[functionSignature] = {} end
 
-	cores[coreName][functionName].limit = amountPerSecond
-	cores[coreName][functionName].executions = 0
+	functions[functionSignature].limit = amountPerSecond
+	functions[functionSignature].executions = 0
 end
 
 -- Register the amount of time in seconds that must exceed between two executions of a certain function
-function Security.registerCooldown(coreName, functionName, cooldownInSeconds)
+function Security.registerCooldown(coreName, functionSignature, cooldownInSeconds)
 	if cooldownInSeconds < 0 then
 		error("The cooldown must be greater then or equal to 0!")
 	end
 
-	if cores[coreName][functionName] == nil then cores[coreName][functionName] = {} end
+	if functions[functionSignature] == nil then functions[functionSignature] = {} end
 
-	cores[coreName][functionName].cooldown  = cooldownInSeconds
-	cores[coreName][functionName].lastExecution = CurTime()
+	functions[functionSignature].cooldown  = cooldownInSeconds
+	functions[functionSignature].lastExecution = CurTime()
 end
 
 --[[
@@ -64,21 +57,42 @@ targetRestriction = {
 
 customFilterFunction = function(playerCalling, argumentTable) (where argumentTable is the ordered list of function arguments)
 ]]
-function Security.registerCallRestriction(coreName, functionName, restriction, customFilterFunction)
-	if not cores[coreName][functionName] then cores[coreName][functionName] = {} end
+function Security.registerCallRestriction(functionSignature, restriction, customFilterFunction)
+	local func = wire_expression2_funcs[functionSignature]
 
-	local func = cores[coreName][functionName]
+	if not func then error("The function with signature \"" .. functionSignature .. "\" could not be found!") end -- The function is not built-in then!
 
-	func.callerRestriction = callerRestriction
-	func.targetRestriction = targetRestriction
-	func.customFilterFunction = customFilterFunction
+	if not func.hasRestrictionChecking then
+		local luaFunc = func[3]
+		func[3] = function (...)
+			local argTable = {}
+			for i = 1, select("#",...) do argTable[i] = select(i,...) end
+			if Security.mayExecute(functionSignature, select(1,...), argTable) then
+				if SERVER then print("Hello from server!") else print("Hello from client!") end
+				Security.executed(functionSignature)
+				return luaFunc(...)
+			end
+
+			return nil
+		end
+
+		func.hasRestrictionChecking = true
+	end
+
+	if not functions[functionSignature] then functions[functionSignature] = {} end
+
+	local f = functions[functionSignature]
+	f.callerRestriction = restriction.callerRestriction or f.callerRestriction
+	f.targetRestriction = restriction.targetRestriction or f.targetRestriction
+
+	if customFilterFunction then f.customFilterFunction = customFilterFunction end
 end
 
--- Must be called before executing a function
-function Security.mayExecute(coreName, functionName, player, argumentTable)
-	if not cores[coreName] then return true end
 
-	local func = cores[coreName][functionName]
+
+-- This will be called by all functions with at least on restriction/cooldown/limit
+function Security.mayExecute(functionSignature, player, argumentTable)
+	local func = functions[functionSignature]
 
 	if not func then
 		return true
@@ -156,8 +170,10 @@ function Security.mayExecute(coreName, functionName, player, argumentTable)
 end
 
 -- Must be called after a function was executed
-function Security.executed(coreName, functionName)
-	local func = cores[coreName][functionName]
+function Security.executed(functionSignature)
+	if not SERVER then return end
+
+	local func = functions[functionSignature]
 
 	if not func then 
 		return 
@@ -172,10 +188,10 @@ function Security.executed(coreName, functionName)
 	end
 end
 
-function Security.getCores()
-	return cores
+function Security.getFunctions()
+	return functions
 end
 
-function Security.setCores(newCores)
-	cores = newCores
+function Security.setFunctions(newFunctions)
+	functions = newFunctions
 end

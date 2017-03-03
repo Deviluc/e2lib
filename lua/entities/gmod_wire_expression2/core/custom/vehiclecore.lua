@@ -1,6 +1,6 @@
 E2Lib.RegisterExtension("VehicleCore", true, "Some useful vehicle functions")
 
-podThirdPerson(number enable)
+e2function void entity:podThirdPerson(number enable)
 	if not IsValid(this) then return end
 	if not isOwner(self, this) then return end
 	if not this:IsVehicle() then return end

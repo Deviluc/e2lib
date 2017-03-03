@@ -180,6 +180,7 @@ function DamageCore.shootBolt(self, pos, vel, damage)
 end
 
 __e2setcost(5)
+
 e2function entity shootBolt(vector pos, vector vel)
 	return DamageCore.shootBolt(self, pos, vel, 100)
 end
