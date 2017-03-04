@@ -2,6 +2,10 @@ AddCSLuaFile()
 
 Security = Security or {}
 
+function Security.getE2Functions() 
+	return wire_expression2_funcs
+end
+
 local functions = {}
 local lastReset = CurTime()
 
@@ -13,7 +17,7 @@ hook.Add("Think", "resetExecutions", function()
 end)
 
 -- Register the amount of times a certain function can be run per second (Min: 1)
-function Security.registerLimit(coreName, functionSignature, amountPerSecond)
+function Security.registerLimit(functionSignature, amountPerSecond)
 	if amountPerSecond < 1 then
 		error("The amount per second must be greater then or equal to 1!")
 	end
@@ -25,7 +29,7 @@ function Security.registerLimit(coreName, functionSignature, amountPerSecond)
 end
 
 -- Register the amount of time in seconds that must exceed between two executions of a certain function
-function Security.registerCooldown(coreName, functionSignature, cooldownInSeconds)
+function Security.registerCooldown(functionSignature, cooldownInSeconds)
 	if cooldownInSeconds < 0 then
 		error("The cooldown must be greater then or equal to 0!")
 	end
