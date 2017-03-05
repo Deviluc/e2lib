@@ -66,35 +66,64 @@ local function createMenu()
     FilterEntry.OnEnter = function (self) generateList(self:GetValue()) end
     generateList()
 
+	//Bottom buttons
+	local SaveLimits = vgui.Create( "DButton", Limits)
+		SaveLimits:SetText( "Save and apply" )
+		SaveLimits:SetPos( 689, 390 )
+		SaveLimits:SetSize( 160, 40 )
+		SaveLimits.DoClick = function()
+		//Save Limit settings
+	end
+	local ApplyLimits = vgui.Create( "DButton", Limits)
+		ApplyLimits:SetText( "Apply" )
+		ApplyLimits:SetPos( 689-80, 390 )
+		ApplyLimits:SetSize( 80, 40 )
+		ApplyLimits.DoClick = function()
+		//Apply Limit settings
+	end
+	local CancelLimits = vgui.Create( "DButton", Limits)
+		CancelLimits:SetText( "Cancel" )
+		CancelLimits:SetPos( 689-160, 390 )
+		CancelLimits:SetSize( 80, 40 )
+		CancelLimits.DoClick = function()
+		//reset changed settings
+	end
 
+	//Edit buttons
+	local Admin = true
+	local FuncName = "placeholder"
 
-    --Bottom buttons
-    local SaveLimits = vgui.Create( "DButton", Limits)
-        SaveLimits:SetText( "Save and apply" )
-        SaveLimits:SetPos( 689, 390 )
-        SaveLimits:SetSize( 160, 40 )
-        SaveLimits.DoClick = function()
-        --Save Limit settings
-    end
-    local ApplyLimits = vgui.Create( "DButton", Limits)
-        ApplyLimits:SetText( "Apply" )
-        ApplyLimits:SetPos( 689-80, 390 )
-        ApplyLimits:SetSize( 80, 40 )
-        ApplyLimits.DoClick = function()
-        --Apply Limit settings
-    end
-    local CancelLimits = vgui.Create( "DButton", Limits)
-        CancelLimits:SetText( "Cancel" )
-        CancelLimits:SetPos( 689-160, 390 )
-        CancelLimits:SetSize( 80, 40 )
-        CancelLimits.DoClick = function()
-        --reset changed settings
-    end
+	if Admin == true then
+		local LabelFunctionname = vgui.Create( "DLabel", Limits )
+		LabelFunctionname:SetPos( 610, 44 )
+		LabelFunctionname:SetDark( true )
+		LabelFunctionname:SetSize( 250, 44 )
+		LabelFunctionname:SetText( "Editing: " .. FuncName )
+		
+		local DermaNumSlider = vgui.Create( "DNumSlider", Limits )
+		DermaNumSlider:SetPos( 50, 50 )			// Set the position
+		DermaNumSlider:SetSize( 300, 100 )		// Set the size
+		DermaNumSlider:SetText( "Maximum props" )	// Set the text above the slider
+		DermaNumSlider:SetMin( 1 )				// Set the minimum number you can slide to
+		DermaNumSlider:SetMax( 200 )				// Set the maximum number you can slide to
+		DermaNumSlider:SetDecimals( 0 )			// Decimal places - zero for whole number
+		
+	else
+		local Labelnoadmin = vgui.Create( "DLabel", Limits )
+		Labelnoadmin:SetPos( 610, 44 )
+		Labelnoadmin:SetDark( true )
+		Labelnoadmin:SetSize( 250, 44 )
+		Labelnoadmin:SetText( "You must be admin to access editing." )
 
-    --Labels
-    local Labelf = vgui.Create( "DLabel", Limits )
-    Labelf:SetPos( 599, 22 )
-    Labelf:SetText( "Hello, world!" )
+	end
+
+	//Labels
+	local Labelf = vgui.Create( "DLabel", Limits )
+	Labelf:SetPos( 610, 0 )
+	Labelf:SetDark( true )
+	Labelf:SetSize( 100, 22 )
+	Labelf:SetText( "Filter functions:" )
+
 end
 
 concommand.Add("e2lib_menu", createMenu)
