@@ -90,7 +90,7 @@ local function createMenu()
 	end
 
 	//Edit buttons
-	local Admin = true
+	local Admin = LocalPlayer:IsAdmin()
 	local FuncName = "placeholder"
 
 	if Admin == true then

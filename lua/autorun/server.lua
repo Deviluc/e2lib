@@ -2,5 +2,9 @@
 include("core/security.lua")
 
 if SERVER then
-	util.AddNetworkString("SendE2Functions")
+	--Security.registerCallRestriction("y(v:)", {callerRestriction = {restrictAll = true} }, nil)
+	--Security.registerCustomFilterFunction("y(v:)", "function (ply, args) return false end")
+	--Security.saveConfig()
+	Security.loadConfig()
+	PrintTable(Security.getFunctions())
 end

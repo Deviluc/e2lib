@@ -64,7 +64,9 @@ customFilterFunction = function(playerCalling, argumentTable) (where argumentTab
 function Security.registerCallRestriction(functionSignature, restriction, customFilterFunction)
 	local func = wire_expression2_funcs[functionSignature]
 
-	if not func then error("The function with signature \"" .. functionSignature .. "\" could not be found!") end -- The function is not built-in then!
+	PrintTable(wire_expression2_funcs)
+
+	if not func then error("The function with signature \"" .. functionSignature .. "\" could not be found!") end -- The function is not built-in or not yet loaded then!
 
 	if not func.hasRestrictionChecking then
 		local luaFunc = func[3]
@@ -72,7 +74,6 @@ function Security.registerCallRestriction(functionSignature, restriction, custom
 			local argTable = {}
 			for i = 1, select("#",...) do argTable[i] = select(i,...) end
 			if Security.mayExecute(functionSignature, select(1,...), argTable) then
-				if SERVER then print("Hello from server!") else print("Hello from client!") end
 				Security.executed(functionSignature)
 				return luaFunc(...)
 			end
@@ -92,7 +93,13 @@ function Security.registerCallRestriction(functionSignature, restriction, custom
 	if customFilterFunction then f.customFilterFunction = customFilterFunction end
 end
 
+function Security.registerCustomFilterFunction(functionSignature, customFilterFunctionString)
+	if not functions[functionSignature] then functions[functionSignature] = {} end
 
+	local func = functions[functionSignature]
+	func.customFilterFunctionString = customFilterFunctionString
+	RunString("Security.getFunctions()[\"" .. functionSignature .. "\"].customFilterFunction = " .. customFilterFunctionString)
+end
 
 -- This will be called by all functions with at least on restriction/cooldown/limit
 function Security.mayExecute(functionSignature, player, argumentTable)
@@ -198,4 +205,26 @@ end
 
 function Security.setFunctions(newFunctions)
 	functions = newFunctions
+end
+
+function Security.saveConfig()
+	if SERVER then
+		if not file.Exists("secure2", "DATA") then file.CreateDir("secure2") end
+		file.Write("secure2/settings.txt", util.TableToJSON(functions, true))
+		print("Config saved!!")
+	end
+end
+
+function Security.loadConfig()
+	if SERVER then
+		if not file.Exists("secure2/settings.txt", "DATA") then return end
+
+		functions = util.JSONToTable(file.Read("secure2/settings.txt", "DATA"))
+
+		for sign,func in pairs(functions) do
+			if func.customFilterFunctionString then
+				RunString("Security.getFunctions()[\"" .. sign .. "\"].customFilterFunction = " .. func.customFilterFunctionString)
+			end
+		end
+	end
 end
