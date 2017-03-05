@@ -28,14 +28,15 @@ local function createMenu()
 
     --Filter
     local FilterEntry = vgui.Create( "DTextEntry", Limits )
-    FilterEntry:SetPos( 650, 50 )
-    FilterEntry:SetSize( 85, 20 )
-    FilterEntry:SetText( "" )
-
+	FilterEntry:SetPos( 0, 0 )
+	FilterEntry:SetSize( 600, 22 )
+	FilterEntry:SetText( "" )
+	
     function generateList(searchString)
         --Function list
         local FuncList = vgui.Create( "DListView" ,Limits)
         FuncList:Clear()
+		FuncList:SetPos(0,22)
         FuncList:SetMultiSelect( false )
         FuncList:SetSize( 600, 350 )
         FuncList:AddColumn( "Signature" )
@@ -90,18 +91,18 @@ local function createMenu()
 	end
 
 	//Edit buttons
-	local Admin = LocalPlayer:IsAdmin()
-	local FuncName = "placeholder"
+	local Admin = true
+	local FuncName = "lorem(ipsum)"
 
 	if Admin == true then
 		local LabelFunctionname = vgui.Create( "DLabel", Limits )
-		LabelFunctionname:SetPos( 610, 44 )
+		LabelFunctionname:SetPos( 610, -4 )
 		LabelFunctionname:SetDark( true )
 		LabelFunctionname:SetSize( 250, 44 )
 		LabelFunctionname:SetText( "Editing: " .. FuncName )
 		
 		local SliderLimit = vgui.Create( "DNumSlider", Limits )
-		SliderLimit:SetPos( 610, 72 )
+		SliderLimit:SetPos( 610, 22 )
 		SliderLimit:SetSize( 250, 22 )
 		SliderLimit:SetText( "Limit" )
 		SliderLimit:SetMin( 0 )
@@ -110,7 +111,7 @@ local function createMenu()
 		SliderLimit:SetDark( true )
 		
 		local SliderCooldown = vgui.Create( "DNumSlider", Limits )
-		SliderCooldown:SetPos( 610, 72+15 )
+		SliderCooldown:SetPos( 610, 22+15 )
 		SliderCooldown:SetSize( 250, 22 )
 		SliderCooldown:SetText( "Cooldown" )
 		SliderCooldown:SetMin( 0 )
@@ -123,14 +124,12 @@ local function createMenu()
 		Labelnoadmin:SetPos( 610, 44 )
 		Labelnoadmin:SetDark( true )
 		Labelnoadmin:SetSize( 250, 44 )
-		Labelnoadmin:SetText( "You must be admin to access editing." )
-
+		Labelnoadmin:SetText( "You must be admin to access editing.")
 	end
 
 	//Labels
 	local Labelf = vgui.Create( "DLabel", Limits )
-	Labelf:SetPos( 610, 0 )
-	Labelf:SetDark( true )
+	Labelf:SetPos( 4, 0 )
 	Labelf:SetSize( 100, 22 )
 	Labelf:SetText( "Filter functions:" )
 
