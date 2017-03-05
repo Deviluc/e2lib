@@ -49,12 +49,10 @@ local function createMenu()
 
         local i = 1
 
-        print("Funcs:")
-        PrintTable(wire_expression2_funcs)
-
-        for key,e2Function in pairs(wire_expression2_funcs) do
+        for signature,e2Function in pairs(wire_expression2_funcs) do
             local argnames, sign, rets, func, cost = e2Function.argnames, unpack(e2Function)
-            local name, sign = string.match(signature, "^([^(]+)%(([^)]*)%)$")
+            print(signature)
+            local name, args = string.match(signature, "^([^(]+)%(([^)]*)%)$")
             local description = E2Helper.GetFunctionSyntax(name, args, rets)
 
             if not searchString or string.find(name, searchString, true) or string.find(args, searchString, true) or string.find(description, searchString, true) then
