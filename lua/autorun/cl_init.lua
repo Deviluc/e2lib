@@ -100,13 +100,23 @@ local function createMenu()
 		LabelFunctionname:SetSize( 250, 44 )
 		LabelFunctionname:SetText( "Editing: " .. FuncName )
 		
-		local DermaNumSlider = vgui.Create( "DNumSlider", Limits )
-		DermaNumSlider:SetPos( 50, 50 )			// Set the position
-		DermaNumSlider:SetSize( 300, 100 )		// Set the size
-		DermaNumSlider:SetText( "Maximum props" )	// Set the text above the slider
-		DermaNumSlider:SetMin( 1 )				// Set the minimum number you can slide to
-		DermaNumSlider:SetMax( 200 )				// Set the maximum number you can slide to
-		DermaNumSlider:SetDecimals( 0 )			// Decimal places - zero for whole number
+		local SliderLimit = vgui.Create( "DNumSlider", Limits )
+		SliderLimit:SetPos( 610, 72 )
+		SliderLimit:SetSize( 250, 22 )
+		SliderLimit:SetText( "Limit" )
+		SliderLimit:SetMin( 0 )
+		SliderLimit:SetMax( 16383 )
+		SliderLimit:SetDecimals( 0 )
+		SliderLimit:SetDark( true )
+		
+		local SliderCooldown = vgui.Create( "DNumSlider", Limits )
+		SliderCooldown:SetPos( 610, 72+15 )
+		SliderCooldown:SetSize( 250, 22 )
+		SliderCooldown:SetText( "Cooldown" )
+		SliderCooldown:SetMin( 0 )
+		SliderCooldown:SetMax( 16383 )
+		SliderCooldown:SetDecimals( 0 )
+		SliderCooldown:SetDark( true )
 		
 	else
 		local Labelnoadmin = vgui.Create( "DLabel", Limits )
