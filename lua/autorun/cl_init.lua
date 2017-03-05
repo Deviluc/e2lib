@@ -56,7 +56,7 @@ local function createMenu()
             local name, args = string.match(signature, "^([^(]+)%(([^)]*)%)$")
             local description = E2Helper.GetFunctionSyntax(name, args, rets)
 
-            if not searchString or string.find(name, searchString, true) or string.find(args, searchString, true) or string.find(description, searchString, true) then
+            if not searchString or string.find(name, searchString, 1, true) or string.find(args, searchString, 1, true) or string.find(description, searchString, 1, true) then
                 FuncList:AddLine(name, "NaN", "NaN", "NaN", args, rets, cost, description)
                 i = i + 1
                 if i == 50 then break end
