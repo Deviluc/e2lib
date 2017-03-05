@@ -91,18 +91,18 @@ local function createMenu()
 	end
 
 	//Edit buttons
-	local Admin = true
-	local FuncName = "lorem(ipsum)"
+	local Admin = LocalPlayer():IsAdmin()
+	local FuncName = "placeholder"
 
 	if Admin == true then
 		local LabelFunctionname = vgui.Create( "DLabel", Limits )
-		LabelFunctionname:SetPos( 610, -4 )
+		LabelFunctionname:SetPos( 610, 44 )
 		LabelFunctionname:SetDark( true )
 		LabelFunctionname:SetSize( 250, 44 )
 		LabelFunctionname:SetText( "Editing: " .. FuncName )
 		
 		local SliderLimit = vgui.Create( "DNumSlider", Limits )
-		SliderLimit:SetPos( 610, 22 )
+		SliderLimit:SetPos( 610, 72 )
 		SliderLimit:SetSize( 250, 22 )
 		SliderLimit:SetText( "Limit" )
 		SliderLimit:SetMin( 0 )
@@ -111,7 +111,7 @@ local function createMenu()
 		SliderLimit:SetDark( true )
 		
 		local SliderCooldown = vgui.Create( "DNumSlider", Limits )
-		SliderCooldown:SetPos( 610, 22+15 )
+		SliderCooldown:SetPos( 610, 72+15 )
 		SliderCooldown:SetSize( 250, 22 )
 		SliderCooldown:SetText( "Cooldown" )
 		SliderCooldown:SetMin( 0 )
@@ -124,12 +124,14 @@ local function createMenu()
 		Labelnoadmin:SetPos( 610, 44 )
 		Labelnoadmin:SetDark( true )
 		Labelnoadmin:SetSize( 250, 44 )
-		Labelnoadmin:SetText( "You must be admin to access editing.")
+		Labelnoadmin:SetText( "You must be admin to access editing." )
+
 	end
 
 	//Labels
 	local Labelf = vgui.Create( "DLabel", Limits )
-	Labelf:SetPos( 4, 0 )
+	Labelf:SetPos( 610, 0 )
+	Labelf:SetDark( true )
 	Labelf:SetSize( 100, 22 )
 	Labelf:SetText( "Filter functions:" )
 
