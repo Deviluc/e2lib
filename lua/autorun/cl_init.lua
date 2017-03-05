@@ -1,4 +1,4 @@
-local currentFuncs = {}
+local currentSignatures = {}
 
 local function createMenu()
     local MenuPanel = vgui.Create( "DFrame" )
@@ -50,7 +50,7 @@ local function createMenu()
         FuncList:AddColumn( "Cost in ops" )
         FuncList:AddColumn( "Description" )
 
-        currentFuncs = {}
+        currentSignatures = {}
         local i = 1
 
         for signature,e2Function in pairs(wire_expression2_funcs) do
@@ -62,10 +62,14 @@ local function createMenu()
             if not searchString or string.find(name, searchString, 1, true) or string.find(args, searchString, 1, true) or string.find(description, searchString, 1, true) then
                 local f = Security.getFunctions()[signature]
 
-                local restricted =  f.limit > 0 or f.cooldown > 0 or f.customFilterFunction != nil or f.callerRestriction != nil or f.targetRestriction != nil
+                if not f then
+                    FuncList:AddLine(name, "0", "0", false, args, rets, cost, description)
+                else
+                    local restricted = f.limit > 0 or f.cooldown > 0 or f.customFilterFunction != nil or f.callerRestriction != nil or f.targetRestriction != nil
+                    FuncList:AddLine(name, f.limit or "0", f.cooldown or "0", restricted, args, rets, cost, description)
+                end
 
-                FuncList:AddLine(name, f.limit or "0", f.cooldown or "0", restricted, args, rets, cost, description)
-                table.insert(currentFuncs, f)
+                table.insert(currentSignatures, signature)
                 i = i + 1
                 if i == 50 then break end
             end
