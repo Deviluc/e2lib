@@ -61,12 +61,17 @@ local function createMenu()
 
             if not searchString or string.find(name, searchString, 1, true) or string.find(args, searchString, 1, true) or string.find(description, searchString, 1, true) then
                 local f = Security.getFunctions()[signature]
+                local check = vgui.Create( "DCheckBox" )
+                check.DoClick = function() return end
+                check:SetSize(10, 10)
 
                 if not f then
-                    FuncList:AddLine(name, "0", "0", false, args, rets, cost, description)
+                    check:SetValue(0)
+                    FuncList:AddLine(name, "0", "0", check, args, rets, cost, description)
                 else
                     local restricted = f.limit > 0 or f.cooldown > 0 or f.customFilterFunction != nil or f.callerRestriction != nil or f.targetRestriction != nil
-                    FuncList:AddLine(name, f.limit or "0", f.cooldown or "0", restricted, args, rets, cost, description)
+                    check:SetValue(restricted)
+                    FuncList:AddLine(name, f.limit or "0", f.cooldown or "0", check, args, rets, cost, description)
                 end
 
                 table.insert(currentSignatures, signature)
