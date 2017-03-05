@@ -1,3 +1,5 @@
+local currentFuncs = {}
+
 local function createMenu()
     local MenuPanel = vgui.Create( "DFrame" )
         MenuPanel:SetSize( 875, 500 )
@@ -48,6 +50,7 @@ local function createMenu()
         FuncList:AddColumn( "Cost in ops" )
         FuncList:AddColumn( "Description" )
 
+        currentFuncs = {}
         local i = 1
 
         for signature,e2Function in pairs(wire_expression2_funcs) do
@@ -57,7 +60,12 @@ local function createMenu()
             local description = E2Helper.GetFunctionSyntax(name, args, rets)
 
             if not searchString or string.find(name, searchString, 1, true) or string.find(args, searchString, 1, true) or string.find(description, searchString, 1, true) then
-                FuncList:AddLine(name, "NaN", "NaN", "NaN", args, rets, cost, description)
+                local f = Security.getFunctions()[signature]
+
+                local restricted =  f.limit > 0 or f.cooldown > 0 or f.customFilterFunction != nil or f.callerRestriction != nil or f.targetRestriction != nil
+
+                FuncList:AddLine(name, f.limit or "0", f.cooldown or "0", restricted, args, rets, cost, description)
+                table.insert(currentFuncs, f)
                 i = i + 1
                 if i == 50 then break end
             end
