@@ -1,7 +1,5 @@
 local currentSignatures = {}
 
-Security.requestRestrictionSync()
-
 local function createMenu()
     local MenuPanel = vgui.Create( "DFrame" )
     MenuPanel:SetSize( 875, 500 )
