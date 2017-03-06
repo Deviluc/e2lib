@@ -6,7 +6,7 @@ local functions = {}
 local lastReset = CurTime()
 
 if SERVER then
-	
+
 	util.AddNetworkString("RequestRestrictionSync")
 	util.AddNetworkString("RestrictionSync")
 

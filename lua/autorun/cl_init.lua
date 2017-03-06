@@ -1,6 +1,8 @@
 local currentSignatures = {}
 
 local function createMenu()
+    Security.requestRestrictionSync()
+
     local MenuPanel = vgui.Create( "DFrame" )
     MenuPanel:SetSize( 875, 500 )
     MenuPanel:Center()
@@ -168,8 +170,23 @@ end
 
 local function createEditView(func)
     -- Edit view
+    local EditFrame = vgui.Create("DFrame")
+    EditFrame:SetSize(875, 500)
+    EditFrame:Center()
+    EditFrame:SetTitle("E2lib security")
+    EditFrame:MakePopup()
+
+    local ListPane = vgui.Create("DListLayout", DFrame)
+    ListPane:SetSize(EditFrame:GetSize())
+    ListPane:SetPos(0, 0)
+
+    local CallerRestrictionLabel = vgui.Create("DLabel")
+    CallerRestrictionLabel:SetText("Caller Restrictions")
+    ListPane:Add(CallerRestrictionLabel)
+
 end
 
 concommand.Add("e2lib_menu", createMenu)
+concommand.Add("e2lib_menu_edit", function() createEditView(nil) end)
 
 
