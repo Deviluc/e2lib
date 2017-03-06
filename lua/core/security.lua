@@ -1,22 +1,37 @@
 AddCSLuaFile()
 
-if not Security and SERVER then util.AddNetworkString("SendRestrictions") end
-
 Security = Security or {}
-
-function Security.getE2Functions() 
-	return wire_expression2_funcs
-end
 
 local functions = {}
 local lastReset = CurTime()
 
-hook.Add("Think", "resetExecutions", function()
-	if (CurTime() - lastReset) >= 1 then
-		for funcSig,func in pairs(functions) do func.executions = 0 end
-		lastReset = CurTime()
-	end
-end)
+if SERVER then
+	
+	util.AddNetworkString("RequestRestrictionSync")
+	util.AddNetworkString("RestrictionSync")
+
+	net.Receive("RequestRestrictionSync", function(len, ply) 
+		net.Start("RestrictionSync")
+		net.WriteTable(functions)
+		net.Send(ply)
+	end)
+
+	hook.Add("PlayerInitialSpawn", "ForceRestrictionSync", function(ply)
+		net.Start("RestrictionSync")
+		net.WriteTable(functions)
+		net.Send(ply)
+	end)
+
+	hook.Add("Think", "resetExecutions", function()
+		if (CurTime() - lastReset) >= 1 then
+			for funcSig,func in pairs(functions) do func.executions = 0 end
+			lastReset = CurTime()
+		end
+	end)
+elseif CLIENT then
+	net.Receive("RestrictionSync", function() functions = net.ReadTable() end)
+end
+
 
 -- Register the amount of times a certain function can be run per second (Min: 1)
 function Security.registerLimit(functionSignature, amountPerSecond)
@@ -104,7 +119,7 @@ function Security.registerCustomFilterFunction(functionSignature, customFilterFu
 	RunString("Security.getFunctions()[\"" .. functionSignature .. "\"].customFilterFunction = " .. customFilterFunctionString)
 end
 
--- This will be called by all functions with at least on restriction/cooldown/limit
+-- This will be called by all functions with at least one restriction/cooldown/limit
 function Security.mayExecute(functionSignature, player, argumentTable)
 	local func = functions[functionSignature]
 
@@ -229,5 +244,12 @@ function Security.loadConfig()
 				RunString("Security.getFunctions()[\"" .. sign .. "\"].customFilterFunction = " .. func.customFilterFunctionString)
 			end
 		end
+	end
+end
+
+function Security.requestRestrictionSync()
+	if CLIENT then
+		net.Start("RequestRestrictionSync")
+		net.SendToServer()
 	end
 end

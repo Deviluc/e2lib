@@ -1,5 +1,7 @@
 local currentSignatures = {}
 
+Security.requestRestrictionSync()
+
 local function createMenu()
     local MenuPanel = vgui.Create( "DFrame" )
     MenuPanel:SetSize( 875, 500 )
@@ -70,7 +72,7 @@ local function createMenu()
                     local restricted = f.limit > 0 or f.cooldown > 0 or f.customFilterFunction != nil or f.callerRestriction != nil or f.targetRestriction != nil
                     local resString = "unrestricted"
                     if restricted then resString = "restricted" end
-                    FuncList:AddLine(name, f.limit or "0", f.cooldown or "0", restricted, args, rets, cost, description)
+                    FuncList:AddLine(name, f.limit or "0", f.cooldown or "0", resString, args, rets, cost, description)
                 end
 
                 table.insert(currentSignatures, signature)
@@ -111,6 +113,18 @@ if Admin == true then
     SliderCooldown:SetMax( 16383 )
     SliderCooldown:SetDecimals( 0 )
     SliderCooldown:SetDark( true )
+
+    FuncList.OnRowSelected = function(row, index)
+        local func = Security.getFunctions()[currentSignatures[index]]
+
+        if func then
+            SliderLimit:SetValue(func.limit or 0)
+            SliderCooldown:SetValue(func.cooldown or 0)
+        else
+            SliderLimit:SetValue(0)
+            SliderCooldown:SetValue(0)
+        end
+    end
     
     -- Bottom buttons
     local SaveLimits = vgui.Create( "DButton", Limits)
