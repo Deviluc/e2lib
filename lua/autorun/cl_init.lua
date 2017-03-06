@@ -150,6 +150,14 @@ local function createMenu()
         CancelLimits.DoClick = function()
             -- reset changed settings
         end
+		
+		local BtnEditview = vgui.Create( "DButton", Limits)
+        BtnEditview:SetText( "Editview" )
+        BtnEditview:SetPos( 0, 390 )
+        BtnEditview:SetSize( 160, 40 )
+        BtnEditview.DoClick = function()
+            -- Open Editview
+        end
     else
         local Labelnoadmin = vgui.Create( "DLabel", Limits )
         Labelnoadmin:SetPos( 0, 480 )
