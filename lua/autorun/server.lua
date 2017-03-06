@@ -2,6 +2,7 @@
 include("core/security.lua")
 
 if SERVER then
+	util.AddNetworkString("SendRestrictions")
 	--Security.registerCallRestriction("y(v:)", {callerRestriction = {restrictAll = true} }, nil)
 	--Security.registerCustomFilterFunction("y(v:)", "function (ply, args) return false end")
 	--Security.saveConfig()

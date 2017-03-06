@@ -1,5 +1,7 @@
 AddCSLuaFile()
 
+if not Security and SERVER then util.AddNetworkString("SendRestrictions") end
+
 Security = Security or {}
 
 function Security.getE2Functions() 
@@ -52,6 +54,7 @@ callerRestriction = {
 
 targetRestriction = {
 	restrictOtherPlayersAllowFriendsAndBuddies = true/false
+	restrictOtherPlayersAllowAdmin
 	restrictOtherPlayers = true/false
 	restrictOtherTeams = true/false
 	restrictHigherRankedTeams = true/false

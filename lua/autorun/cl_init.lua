@@ -2,10 +2,10 @@ local currentSignatures = {}
 
 local function createMenu()
     local MenuPanel = vgui.Create( "DFrame" )
-        MenuPanel:SetSize( 875, 500 )
-        MenuPanel:Center()
-        MenuPanel:SetTitle( "E2lib security" )
-        MenuPanel:MakePopup()
+    MenuPanel:SetSize( 875, 500 )
+    MenuPanel:Center()
+    MenuPanel:SetTitle( "E2lib security" )
+    MenuPanel:MakePopup()
 
     --Base button
     --local TabLimits = vgui.Create( "DButton", MenuPanel )
@@ -18,15 +18,15 @@ local function createMenu()
 
     --Inline Sheets
     local Inline = vgui.Create( "DPropertySheet", MenuPanel )
-        Inline:Dock( FILL )
+    Inline:Dock( FILL )
 
     local Limits = vgui.Create( "DPanel", Inline )
-        --Limits.Paint = function( self, w, h ) draw.RoundedBox( 4, 0, 0, w, h, Color( 0, 128, 255 ) ) end
-        Inline:AddSheet( "Limits/Cooldowns", Limits, "icon16/calculator.png" )
+    --Limits.Paint = function( self, w, h ) draw.RoundedBox( 4, 0, 0, w, h, Color( 0, 128, 255 ) ) end
+    Inline:AddSheet( "Limits/Cooldowns", Limits, "icon16/calculator.png" )
 
     local Restriction = vgui.Create( "DPanel", Inline )
-        --Restriction.Paint = function( self, w, h ) draw.RoundedBox( 4, 0, 0, w, h, Color( 255, 128, 0 ) ) end
-        Inline:AddSheet( "Restrictions", Restriction, "icon16/calculator.png" )
+    --Restriction.Paint = function( self, w, h ) draw.RoundedBox( 4, 0, 0, w, h, Color( 255, 128, 0 ) ) end
+    Inline:AddSheet( "Restrictions", Restriction, "icon16/calculator.png" )
 
     --Filter
     local FilterEntry = vgui.Create( "DTextEntry", Limits )
@@ -34,44 +34,43 @@ local function createMenu()
 	FilterEntry:SetSize( 600, 22 )
 	FilterEntry:SetText( "" )
 	
+
+    --Function list
+    local FuncList = vgui.Create( "DListView" ,Limits)
+    FuncList:SetPos(0,22)
+    FuncList:SetMultiSelect( false )
+    FuncList:SetSize( 600, 350 )
+    FuncList:AddColumn( "Signature" )
+    FuncList:AddColumn( "Limit" )
+    FuncList:AddColumn( "Cooldown" )
+    FuncList:AddColumn( "Restricted" )
+    FuncList:AddColumn( "Arguments" )
+    FuncList:AddColumn( "Returns" )
+    FuncList:AddColumn( "Cost in ops" )
+    FuncList:AddColumn( "Description" )
+
     function generateList(searchString)
-        --Function list
-        local FuncList = vgui.Create( "DListView" ,Limits)
         FuncList:Clear()
-		FuncList:SetPos(0,22)
-        FuncList:SetMultiSelect( false )
-        FuncList:SetSize( 600, 350 )
-        FuncList:AddColumn( "Signature" )
-        FuncList:AddColumn( "Limit" )
-        FuncList:AddColumn( "Cooldown" )
-        FuncList:AddColumn( "Restricted" )
-        FuncList:AddColumn( "Arguments" )
-        FuncList:AddColumn( "Returns" )
-        FuncList:AddColumn( "Cost in ops" )
-        FuncList:AddColumn( "Description" )
 
         currentSignatures = {}
         local i = 1
 
         for signature,e2Function in pairs(wire_expression2_funcs) do
             local argnames, sign, rets, func, cost = e2Function.argnames, unpack(e2Function)
-            print(signature)
             local name, args = string.match(signature, "^([^(]+)%(([^)]*)%)$")
             local description = E2Helper.GetFunctionSyntax(name, args, rets)
 
             if not searchString or string.find(name, searchString, 1, true) or string.find(args, searchString, 1, true) or string.find(description, searchString, 1, true) then
+                print("sign: " .. signature)
                 local f = Security.getFunctions()[signature]
-                local check = vgui.Create( "DCheckBox" )
-                check.DoClick = function() return end
-                check:SetSize(10, 10)
 
                 if not f then
-                    check:SetValue(0)
-                    FuncList:AddLine(name, "0", "0", check, args, rets, cost, description)
+                    FuncList:AddLine(name, "0", "0", "unrestricted", args, rets, cost, description)
                 else
                     local restricted = f.limit > 0 or f.cooldown > 0 or f.customFilterFunction != nil or f.callerRestriction != nil or f.targetRestriction != nil
-                    check:SetValue(restricted)
-                    FuncList:AddLine(name, f.limit or "0", f.cooldown or "0", check, args, rets, cost, description)
+                    local resString = "unrestricted"
+                    if restricted then resString = "restricted" end
+                    FuncList:AddLine(name, f.limit or "0", f.cooldown or "0", restricted, args, rets, cost, description)
                 end
 
                 table.insert(currentSignatures, signature)
@@ -113,29 +112,31 @@ if Admin == true then
     SliderCooldown:SetDecimals( 0 )
     SliderCooldown:SetDark( true )
     
-    //Bottom buttons
+    -- Bottom buttons
     local SaveLimits = vgui.Create( "DButton", Limits)
-        SaveLimits:SetText( "Save and apply" )
-        SaveLimits:SetPos( 689, 390 )
-        SaveLimits:SetSize( 160, 40 )
-        SaveLimits.DoClick = function()
-        //Save Limit settings
+    SaveLimits:SetText( "Save and apply" )
+    SaveLimits:SetPos( 689, 390 )
+    SaveLimits:SetSize( 160, 40 )
+    SaveLimits.DoClick = function()
+        -- Save Limit settings
     end
+
     local ApplyLimits = vgui.Create( "DButton", Limits)
-        ApplyLimits:SetText( "Apply" )
-        ApplyLimits:SetPos( 689-80, 390 )
-        ApplyLimits:SetSize( 80, 40 )
-        ApplyLimits.DoClick = function()
-        //Apply Limit settings
+    ApplyLimits:SetText( "Apply" )
+    ApplyLimits:SetPos( 689-80, 390 )
+    ApplyLimits:SetSize( 80, 40 )
+    ApplyLimits.DoClick = function()
+        -- Apply Limit settings
     end
+
     local CancelLimits = vgui.Create( "DButton", Limits)
-        CancelLimits:SetText( "Cancel" )
-        CancelLimits:SetPos( 689-160, 390 )
-        CancelLimits:SetSize( 80, 40 )
-        CancelLimits.DoClick = function()
-        //reset changed settings
+    CancelLimits:SetText( "Cancel" )
+    CancelLimits:SetPos( 689-160, 390 )
+    CancelLimits:SetSize( 80, 40 )
+    CancelLimits.DoClick = function()
+        -- reset changed settings
     end
-elseif Admin == false then
+else
     local Labelnoadmin = vgui.Create( "DLabel", Limits )
     Labelnoadmin:SetPos( 0, 480 )
     Labelnoadmin:SetDark( true )
@@ -143,10 +144,9 @@ elseif Admin == false then
     Labelnoadmin:SetText( "You must be admin to access editing." )
     
     MenuPanel:SetSize( 626, 500 )
-
 end
 
-	//Labels
+	-- Labels
 	local Labelf = vgui.Create( "DLabel", Limits )
 	Labelf:SetPos( 4, 0 )
 	Labelf:SetSize( 100, 22 )
