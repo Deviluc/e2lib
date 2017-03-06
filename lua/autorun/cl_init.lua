@@ -85,80 +85,80 @@ local function createMenu()
     FilterEntry.OnEnter = function (self) generateList(self:GetValue()) end
     generateList()
 
-//Edit buttons
-local Admin = true
-local FuncName = "lorem(ipsum)"
+    -- Edit buttons
+    local Admin = true
+    local FuncName = "lorem(ipsum)"
 
-if Admin == true then
-    local LabelFunctionname = vgui.Create( "DLabel", Limits )
-    LabelFunctionname:SetPos( 610, -4 )
-    LabelFunctionname:SetDark( true )
-    LabelFunctionname:SetSize( 250, 44 )
-    LabelFunctionname:SetText( "Editing: " .. FuncName )
-    
-    local SliderLimit = vgui.Create( "DNumSlider", Limits )
-    SliderLimit:SetPos( 610, 22 )
-    SliderLimit:SetSize( 250, 22 )
-    SliderLimit:SetText( "Limit" )
-    SliderLimit:SetMin( 0 )
-    SliderLimit:SetMax( 16383 )
-    SliderLimit:SetDecimals( 0 )
-    SliderLimit:SetDark( true )
-    
-    local SliderCooldown = vgui.Create( "DNumSlider", Limits )
-    SliderCooldown:SetPos( 610, 22+15 )
-    SliderCooldown:SetSize( 250, 22 )
-    SliderCooldown:SetText( "Cooldown" )
-    SliderCooldown:SetMin( 0 )
-    SliderCooldown:SetMax( 16383 )
-    SliderCooldown:SetDecimals( 0 )
-    SliderCooldown:SetDark( true )
+    if Admin == true then
+        local LabelFunctionname = vgui.Create( "DLabel", Limits )
+        LabelFunctionname:SetPos( 610, -4 )
+        LabelFunctionname:SetDark( true )
+        LabelFunctionname:SetSize( 250, 44 )
+        LabelFunctionname:SetText( "Editing: " .. FuncName )
+        
+        local SliderLimit = vgui.Create( "DNumSlider", Limits )
+        SliderLimit:SetPos( 610, 22 )
+        SliderLimit:SetSize( 250, 22 )
+        SliderLimit:SetText( "Limit" )
+        SliderLimit:SetMin( 0 )
+        SliderLimit:SetMax( 16383 )
+        SliderLimit:SetDecimals( 0 )
+        SliderLimit:SetDark( true )
+        
+        local SliderCooldown = vgui.Create( "DNumSlider", Limits )
+        SliderCooldown:SetPos( 610, 22+15 )
+        SliderCooldown:SetSize( 250, 22 )
+        SliderCooldown:SetText( "Cooldown" )
+        SliderCooldown:SetMin( 0 )
+        SliderCooldown:SetMax( 16383 )
+        SliderCooldown:SetDecimals( 0 )
+        SliderCooldown:SetDark( true )
 
-    FuncList.OnRowSelected = function(row, index)
-        local func = Security.getFunctions()[currentSignatures[index]]
+        FuncList.OnRowSelected = function(row, index)
+            local func = Security.getFunctions()[currentSignatures[index]]
 
-        if func then
-            SliderLimit:SetValue(func.limit or 0)
-            SliderCooldown:SetValue(func.cooldown or 0)
-        else
-            SliderLimit:SetValue(0)
-            SliderCooldown:SetValue(0)
+            if func then
+                SliderLimit:SetValue(func.limit or 0)
+                SliderCooldown:SetValue(func.cooldown or 0)
+            else
+                SliderLimit:SetValue(0)
+                SliderCooldown:SetValue(0)
+            end
         end
-    end
-    
-    -- Bottom buttons
-    local SaveLimits = vgui.Create( "DButton", Limits)
-    SaveLimits:SetText( "Save and apply" )
-    SaveLimits:SetPos( 689, 390 )
-    SaveLimits:SetSize( 160, 40 )
-    SaveLimits.DoClick = function()
-        -- Save Limit settings
-    end
+        
+        -- Bottom buttons
+        local SaveLimits = vgui.Create( "DButton", Limits)
+        SaveLimits:SetText( "Save and apply" )
+        SaveLimits:SetPos( 689, 390 )
+        SaveLimits:SetSize( 160, 40 )
+        SaveLimits.DoClick = function()
+            -- Save Limit settings
+        end
 
-    local ApplyLimits = vgui.Create( "DButton", Limits)
-    ApplyLimits:SetText( "Apply" )
-    ApplyLimits:SetPos( 689-80, 390 )
-    ApplyLimits:SetSize( 80, 40 )
-    ApplyLimits.DoClick = function()
-        -- Apply Limit settings
-    end
+        local ApplyLimits = vgui.Create( "DButton", Limits)
+        ApplyLimits:SetText( "Apply" )
+        ApplyLimits:SetPos( 689-80, 390 )
+        ApplyLimits:SetSize( 80, 40 )
+        ApplyLimits.DoClick = function()
+            -- Apply Limit settings
+        end
 
-    local CancelLimits = vgui.Create( "DButton", Limits)
-    CancelLimits:SetText( "Cancel" )
-    CancelLimits:SetPos( 689-160, 390 )
-    CancelLimits:SetSize( 80, 40 )
-    CancelLimits.DoClick = function()
-        -- reset changed settings
+        local CancelLimits = vgui.Create( "DButton", Limits)
+        CancelLimits:SetText( "Cancel" )
+        CancelLimits:SetPos( 689-160, 390 )
+        CancelLimits:SetSize( 80, 40 )
+        CancelLimits.DoClick = function()
+            -- reset changed settings
+        end
+    else
+        local Labelnoadmin = vgui.Create( "DLabel", Limits )
+        Labelnoadmin:SetPos( 0, 480 )
+        Labelnoadmin:SetDark( true )
+        Labelnoadmin:SetSize( 250, 44 )
+        Labelnoadmin:SetText( "You must be admin to access editing." )
+        
+        MenuPanel:SetSize( 626, 500 )
     end
-else
-    local Labelnoadmin = vgui.Create( "DLabel", Limits )
-    Labelnoadmin:SetPos( 0, 480 )
-    Labelnoadmin:SetDark( true )
-    Labelnoadmin:SetSize( 250, 44 )
-    Labelnoadmin:SetText( "You must be admin to access editing." )
-    
-    MenuPanel:SetSize( 626, 500 )
-end
 
 	-- Labels
 	local Labelf = vgui.Create( "DLabel", Limits )
@@ -166,6 +166,10 @@ end
 	Labelf:SetSize( 100, 22 )
 	Labelf:SetText( "Filter functions:" )
 
+end
+
+local function createEditView(func)
+    -- Edit view
 end
 
 concommand.Add("e2lib_menu", createMenu)
