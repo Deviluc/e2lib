@@ -1,3 +1,5 @@
+include("core/gridpane.lua")
+
 local currentSignatures = {}
 
 local function createMenu()
@@ -184,15 +186,51 @@ local function createEditView(func)
     EditFrame:SetTitle("E2lib security")
     EditFrame:MakePopup()
 
-    local ListPane = vgui.Create("DListLayout", DFrame)
+    local GridPane = vgui.Create("GridPane", EditFrame)
+    GridPane:SetPos(0, 15)
+    GridPane:SetGap(10, 10)
+    GridPane:SetPadding(20)
+    GridPane:SetBGColor(20, 20, 20, 255)
+
+    local CallerRestrictionLabel = vgui.Create("DLabel", GridPane)
+    CallerRestrictionLabel:SetText("Caller Restrictions")
+    GridPane:Add(CallerRestrictionLabel, 1, 1, 1, 1, -1, 0)
+
+    local RestrictAllCheckBox = vgui.Create("DCheckBox", GridPane)
+    RestrictAllCheckBox.maxWidth = 10
+    RestrictAllCheckBox.maxHeight = 10
+    GridPane:Add(RestrictAllCheckBox, 2, 1, 1, 1, 1, 0)
+
+    GridPane:RenderPositions()
+
+    --[[local ListPane = vgui.Create("DListLayout", EditFrame)
     ListPane:SetSize(EditFrame:GetSize())
-    ListPane:SetPos(0, 0)
+    ListPane:Dock(FILL)
 
     local CallerRestrictionLabel = vgui.Create("DLabel")
     CallerRestrictionLabel:SetText("Caller Restrictions")
     ListPane:Add(CallerRestrictionLabel)
+    CallerRestrictionLabel:CenterHorizontal()
+
+    local RestrictAllCheckBox = vgui.Create("DCheckBox")
+    ListPane:Add(RestrictAllCheckBox)
+
+
+    local RestrictLabelsGrid = vgui.Create("DGrid")
+    RestrictLabelsGrid:SetCols(2)
+
+    local RestrictTeamsLabel = vgui.Create("DLabel")
+    RestrictTeamsLabel:SetText("Restricted teams:")
+
+    local RestrictSteamIdsLabel = vgui.Create("DLabel")
+    RestrictSteamIdsLabel:SetText("Restricted steam-ids:")
+
+    RestrictLabelsGrid:AddItem(RestrictTeamsLabel)
+    RestrictLabelsGrid:AddItem(RestrictSteamIdsLabel)
+    ListPane:Add(RestrictLabelsGrid)]]
 
 end
+
 
 concommand.Add("e2lib_menu", createMenu)
 concommand.Add("e2lib_menu_edit", function() createEditView(nil) end)
