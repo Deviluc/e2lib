@@ -178,6 +178,23 @@ local function createMenu()
 
 end
 
+local function HBox(parent, spacing, ...)
+    local GridPane = vgui.Create("GridPane", parent)
+    GridPane:SetGap(spacing, 0)
+    GridPane:SetPaintBackgroundEnabled(false)
+    GridPane:SetBackgroundColor(Color(0, 0, 0, 0))
+
+    for i = 1, select("#",...) do
+        local panel = select(i,...)
+        panel:SetParent(GridPane)
+        GridPane:Add(panel, i, 1, 1, 1, -1, 0)
+    end
+
+    GridPane:RenderPositions()
+
+    return GridPane
+end
+
 local function createEditView(func)
     -- Edit view
     local EditFrame = vgui.Create("DFrame")
@@ -187,19 +204,48 @@ local function createEditView(func)
     EditFrame:MakePopup()
 
     local GridPane = vgui.Create("GridPane", EditFrame)
-    GridPane:SetPos(0, 15)
+    GridPane:SetPos(0, 20)
     GridPane:SetGap(10, 10)
     GridPane:SetPadding(20)
-    GridPane:SetBGColor(20, 20, 20, 255)
+    GridPane:SetPaintBackgroundEnabled(true)
+    GridPane:SetBackgroundColor(Color(200, 200, 200, 0))
 
     local CallerRestrictionLabel = vgui.Create("DLabel", GridPane)
     CallerRestrictionLabel:SetText("Caller Restrictions")
-    GridPane:Add(CallerRestrictionLabel, 1, 1, 1, 1, -1, 0)
+    CallerRestrictionLabel:SetSize(150, 20)
+    GridPane:Add(CallerRestrictionLabel, 1, 1, 2, 1, 0, 0)
 
     local RestrictAllCheckBox = vgui.Create("DCheckBox", GridPane)
-    RestrictAllCheckBox.maxWidth = 10
-    RestrictAllCheckBox.maxHeight = 10
-    GridPane:Add(RestrictAllCheckBox, 2, 1, 1, 1, 1, 0)
+    local RestrictAllLabel = vgui.Create("DLabel", GridPane)
+    RestrictAllLabel:SetText("Restrict all")
+    RestrictAllLabel:SetSize(150, 20)
+    local RestrictAllHBox = HBox(GridPane, 10, RestrictAllCheckBox, RestrictAllLabel)
+    GridPane:Add(RestrictAllHBox, 1, 2, 1, 1, -1, 0)
+
+    local RestrictedTeamsLabel = vgui.Create("DLabel", GridPane)
+    RestrictedTeamsLabel:SetSize(150, 20)
+    RestrictedTeamsLabel:SetText("Restricted teams:")
+    GridPane:Add(RestrictedTeamsLabel, 1, 3, 1, 1, 0, 0)
+
+    local RestrictedSteamIdsLabel = vgui.Create("DLabel", GridPane)
+    RestrictedSteamIdsLabel:SetSize(150, 20)
+    RestrictedSteamIdsLabel:SetText("Restricted steam-ids:")
+    GridPane:Add(RestrictedSteamIdsLabel, 2, 3, 1, 1, 0, 0)
+
+    local TeamList = vgui.Create("DListView", GridPane)
+    TeamList:SetMultiSelect(false)
+    TeamList:AddColumn("ID")
+    TeamList:AddColumn("Name")
+    TeamList:AddColumn("Restricted")
+
+    local teams = team.GetAllTeams()
+
+    for k,v in pairs(teams) do
+        TeamList:AddLine(k, teams[k].name, false)
+    end
+
+    GridPane.setSize(TeamList, 150, 300, 600, 100, 200, 400)
+    GridPane:Add(TeamList, 1, 4, 1, 1, 0, 0)
 
     GridPane:RenderPositions()
 
