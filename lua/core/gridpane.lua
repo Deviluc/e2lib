@@ -1,6 +1,6 @@
 AddCSLuaFile()
 
-local GridPane = {}
+GridPane = {}
 
 local function calcPos(item, colIndex, rowIndex, cols, rows, padding, hgap, vgap)
 	local col = cols[colIndex]
@@ -34,23 +34,23 @@ local function calcPos(item, colIndex, rowIndex, cols, rows, padding, hgap, vgap
 
 	if rowIndex > 1 then
 		for i = 1, rowIndex - 1 do
-			yOffset = yOffset + rows[i].height + hgap
+			yOffset = yOffset + rows[i].height + vgap
 		end
 	end
 
 	local widthSpan = 0
 	local heightSpan = 0
 
-	for i = 1, item.colSpan do
-		local col = cols[i]
+	for i = 0, item.colSpan - 1 do
+		local col = cols[colIndex + i]
 
 		if col then
 			widthSpan = widthSpan + col.width
 		end
 	end
 
-	for i = 1, item.rowSpan do
-		local row = rows[i]
+	for i = 0, item.rowSpan - 1 do
+		local row = rows[rowIndex + i]
 
 		if row then
 			heightSpan = heightSpan + row.height
@@ -99,7 +99,7 @@ function GridPane:RenderPositions()
 	end
 
 	local gWidth = minWidthSum
-	local gHeight = minWidthSum
+	local gHeight = minHeightSum
 	local widthMul = 1
 	local heightMul = 1
 
@@ -112,6 +112,8 @@ function GridPane:RenderPositions()
 	end
 
 	self:SetSize(gWidth * widthMul, gHeight * heightMul)
+	local width, height = self:GetSize()
+	print("Setting size: (" .. width .. ", " .. height .. ")")
 
 	for i = 1, colCount do
 		local col = cols[i]
@@ -208,6 +210,17 @@ function GridPane:Add(panel, colIndex, rowIndex, colSpan, rowSpan, halign, valig
 
 	col[rowIndex] = item
 	row[colIndex] = item
+end
+
+-- Convenience function used to set size parameters on any panel
+-- Must be set before adding the panel to a gridpane!!
+function GridPane.setSize(panel, minWidth, prefWidth, maxWidth, minHeight, prefHeight, maxHeight)
+	panel.minWidth = minWidth
+	panel.prefWidth = prefWidth
+	panel.maxWidth = maxWidth
+	panel.minHeight = minHeight
+	panel.prefHeight = prefHeight
+	panel.maxHeight = maxHeight
 end
 
 if CLIENT then vgui.Register("GridPane", GridPane, "DPanel") end
