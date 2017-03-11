@@ -6,14 +6,14 @@ local function calcPos(item, colIndex, rowIndex, cols, rows, padding, hgap, vgap
 	local col = cols[colIndex]
 	local row = rows[rowIndex]
 
-	print("Cols:")
-	PrintTable(cols)
+	--print("Cols:")
+	--PrintTable(cols)
 
-	print("Rows:")
-	PrintTable(rows)
+	--print("Rows:")
+	--PrintTable(rows)
 
-	print("Item:")
-	PrintTable(item)
+	--print("Item:")
+	--PrintTable(item)
 
 	local w = col.width
 	local h = row.height
@@ -71,10 +71,10 @@ function GridPane:RenderPositions()
 	local rows = self.rows
 	local colCount = self.colCount
 	local rowCount = self.rowCount
-	local minWidthSum = self.padding
-	local prefWidthSum = self.padding
-	local minHeightSum = self.padding
-	local prefHeightSum = self.padding
+	local minWidthSum = self.padding * 2
+	local prefWidthSum = self.padding * 2
+	local minHeightSum = self.padding * 2
+	local prefHeightSum = self.padding * 2
 
 	local pWidth, pHeight = self:GetParent():GetSize()
 
@@ -82,7 +82,7 @@ function GridPane:RenderPositions()
 		minWidthSum = minWidthSum + cols[i].minWidth
 		prefWidthSum = prefWidthSum + cols[i].prefWidth
 
-		if i != colCount then
+		if i != 1 then
 			minWidthSum = minWidthSum + self.hgap
 			prefWidthSum = prefWidthSum + self.hgap
 		end
@@ -98,34 +98,35 @@ function GridPane:RenderPositions()
 		end
 	end
 
-	local gWidth = minWidthSum
-	local gHeight = minHeightSum
+	local gWidth, gHeight = self:GetSize()
+
+	if gWidth < minWidthSum then gWidth = minWidthSum end
+	if gHeight < minHeightSum then gHeight = minHeightSum end
+
+	if gWidth > prefWidthSum then gWidth = prefWidthSum end
+	if gHeight > prefHeightSum then gHeight = prefHeightSum end
+
 	local widthMul = 1
 	local heightMul = 1
 
-	if pWidth > gWidth then
-		widthMul = pWidth / gWidth
-	end
+	widthMul = gWidth / minWidthSum
+	heightMul = gHeight / minHeightSum
 
-	if pHeight > gHeight then
-		heightMul = pHeight / gHeight
-	end
-
-	self:SetSize(gWidth * widthMul, gHeight * heightMul)
+	self:SetSize(gWidth, gHeight)
 	local width, height = self:GetSize()
 	print("Setting size: (" .. width .. ", " .. height .. ")")
 
 	for i = 1, colCount do
 		local col = cols[i]
 		local width = col.minWidth * widthMul
-		if width > col.prefWidth then width = col.prefWidth end
+		--if width > col.prefWidth then width = col.prefWidth end
 		col.width = width
 	end
 
 	for i = 1, rowCount do
 		local row = rows[i]
 		local height = row.minHeight * heightMul
-		if height > row.prefHeight then height = row.prefHeight end
+		--if height > row.prefHeight then height = row.prefHeight end
 		row.height = height
 	end
 
@@ -155,6 +156,18 @@ function GridPane:Init()
 	self.padding = 0
 	self.hgap = 0
 	self.vgap = 0
+
+	self.lastWidth, self.lastHeight = self:GetSize()
+	self.itemAdded = false
+
+	function GridPane:PerformLayout(...)
+		local w, h = self:GetSize()
+		if self.lastWidth != w or self.lastHeight != h or self.itemAdded then
+			self:RenderPositions()
+			self.lastWidth, self.lastHeight = self:GetSize()
+			itemAdded = false
+		end
+	end
 end
 
 function GridPane:SetPadding(paddingTopBottomRightLeft)
@@ -210,9 +223,11 @@ function GridPane:Add(panel, colIndex, rowIndex, colSpan, rowSpan, halign, valig
 
 	col[rowIndex] = item
 	row[colIndex] = item
+
+	itemAdded = true
 end
 
--- Convenience function used to set size parameters on any panel
+-- Convenience function used to set size parameters all at once on any panel
 -- Must be set before adding the panel to a gridpane!!
 function GridPane.setSize(panel, minWidth, prefWidth, maxWidth, minHeight, prefHeight, maxHeight)
 	panel.minWidth = minWidth

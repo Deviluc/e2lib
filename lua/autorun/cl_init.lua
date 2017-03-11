@@ -1,4 +1,5 @@
 include("core/gridpane.lua")
+include("core/box.lua")
 
 local currentSignatures = {}
 
@@ -178,29 +179,12 @@ local function createMenu()
 
 end
 
-local function HBox(parent, spacing, ...)
-    local GridPane = vgui.Create("GridPane", parent)
-    GridPane:SetGap(spacing, 0)
-    GridPane:SetPaintBackgroundEnabled(false)
-    GridPane:SetBackgroundColor(Color(0, 0, 0, 0))
-
-    for i = 1, select("#",...) do
-        local panel = select(i,...)
-        panel:SetParent(GridPane)
-        GridPane:Add(panel, i, 1, 1, 1, -1, 0)
-    end
-
-    GridPane:RenderPositions()
-
-    return GridPane
-end
-
 local function CheckBox(parent, text)
     local box = vgui.Create("DCheckBox")
     local label = vgui.Create("DLabel")
     label:SetSize(200, 15)
     label:SetText(text)
-    return HBox(parent, 5, box, label)
+    return HBox.Create(parent, 0, 5, box, 0, 0, label, 0, 0)
 end
 
 
@@ -211,6 +195,9 @@ local function createEditView(func)
     EditFrame:Center()
     EditFrame:SetTitle("E2lib security")
     EditFrame:MakePopup()
+    EditFrame:SetSizable(true)
+    EditFrame.thinkBackup = EditFrame.Think
+    EditFrame.lastWidth, EditFrame.lastHeight = EditFrame:GetSize()
 
     local GridPane = vgui.Create("GridPane", EditFrame)
     GridPane:SetPos(0, 20)
@@ -218,6 +205,17 @@ local function createEditView(func)
     GridPane:SetPadding(20)
     GridPane:SetPaintBackgroundEnabled(true)
     GridPane:SetBackgroundColor(Color(200, 200, 200, 0))
+
+    function EditFrame:Think()
+        self:thinkBackup()
+        local w, h = self:GetSize()
+
+        if self.lastWidth != w or self.lastHeight != h then
+            GridPane:SetSize(w, h - 25)
+            GridPane:SetPos(0, 20)
+            self.lastWidth, self.lastHeight = w, h
+        end
+    end
 
     local CallerRestrictionLabel = vgui.Create("DLabel", GridPane)
     CallerRestrictionLabel:SetText("Caller Restrictions")
@@ -227,8 +225,8 @@ local function createEditView(func)
     local RestrictAllCheckBox = vgui.Create("DCheckBox", GridPane)
     local RestrictAllLabel = vgui.Create("DLabel", GridPane)
     RestrictAllLabel:SetText("Restrict all")
-    RestrictAllLabel:SetSize(150, 15)
-    local RestrictAllHBox = HBox(GridPane, 5, RestrictAllCheckBox, RestrictAllLabel)
+    RestrictAllLabel:SetSize(200, 20)
+    local RestrictAllHBox = HBox.Create(GridPane, 0, 5, RestrictAllCheckBox, 0, 0, RestrictAllLabel, 0, 0)
     GridPane:Add(RestrictAllHBox, 1, 2, 1, 1, -1, 0)
 
     local RestrictedTeamsLabel = vgui.Create("DLabel", GridPane)
@@ -259,7 +257,7 @@ local function createEditView(func)
     local SteamIdList = vgui.Create("DListView", GridPane)
     SteamIdList:SetMultiSelect(false)
     SteamIdList:AddColumn("Steam-ID")
-    GridPane.setSize(SteamIdList, 200, 400, 800, 100, 200, 600)
+    GridPane.setSize(SteamIdList, 200, 600, 800, 100, 200, 600)
     GridPane:Add(SteamIdList, 2, 4, 1, 1, 0, -1)
 
     local SteamIdTextField = vgui.Create("DTextEntry", GridPane)
@@ -274,8 +272,8 @@ local function createEditView(func)
     SteamIdRemoveButton:SetText("Remove")
     SteamIdRemoveButton:SetSize(50, 20)
 
-    local SteamIdButtonBox = HBox(GridPane, 5, SteamIdTextField, SteamIdAddButton, SteamIdRemoveButton)
-    GridPane.setSize(SteamIdButtonBox, 185, 400, 800, 20, 20, 20)
+    local SteamIdButtonBox = HBox.Create(GridPane, 0, 5, SteamIdTextField, 0, 0, SteamIdAddButton, 0, 0, SteamIdRemoveButton, 0, 0)
+    --GridPane.setSize(SteamIdButtonBox, 185, 400, 800, 20, 20, 20)
     GridPane:Add(SteamIdButtonBox, 2, 5, 1, 1, 1, -1)
 
     local TargetRestrictionLabel = vgui.Create("DLabel", GridPane)
@@ -288,24 +286,25 @@ local function createEditView(func)
     local RestrictAllButOwnTeamCheckBox = CheckBox(GridPane, "Restrict all but own team")
     local RestrictHigherRankedPlayersCheckBox = CheckBox(GridPane, "Restrict all but higher ranked players")
 
-    GridPane:Add(RestrictAllButFriendsCheckBox, 1, 7, 1, 1, -1, 0)
-    GridPane:Add(RestrictAllButSelfCheckBox, 1, 8, 1, 1, -1, 0)
-    GridPane:Add(RestrictAllButOwnTeamCheckBox, 1, 9, 1, 1, -1, 0)
-    GridPane:Add(RestrictHigherRankedPlayersCheckBox, 1, 10, 1, 1, -1, 0)
+    local RestrictionFlagsBox = VBox.Create(GridPane, 0, 5, RestrictAllButFriendsCheckBox, -1, 0, RestrictAllButSelfCheckBox, -1, 0, RestrictAllButOwnTeamCheckBox, -1, 0, RestrictHigherRankedPlayersCheckBox, -1, 0)
+
+    GridPane:Add(RestrictionFlagsBox, 1, 7, 1, 1, -1, -1)
 
     local RestrictedEntsStringsLabel = vgui.Create("DLabel", GridPane)
     RestrictedEntsStringsLabel:SetText("Restricted models/strings:")
     RestrictedEntsStringsLabel:SetSize(150, 15)
-    GridPane:Add(RestrictedEntsStringsLabel, 2, 7, 1, 1, 0, -1)
 
     local RestrictedStringsList = vgui.Create("DListView", GridPane)
     RestrictedStringsList:SetMultiSelect(false)
     RestrictedStringsList:AddColumn("String / Entity model")
-    GridPane.setSize(RestrictedStringsList, 150, 400, 600, 200, 600, 800)
-    GridPane:Add(RestrictedStringsList, 2, 8, 1, 3, 0, 0)
+    GridPane.setSize(RestrictedStringsList, 150, 800, 800, 50, 100, 400)
 
+    local RestrictedStringsBox = VBox.Create(GridPane, 0, 5, RestrictedEntsStringsLabel, 0, 0, RestrictedStringsList, 0, 0)
+    GridPane:Add(RestrictedStringsBox, 2, 7, 1, 1, -1, -1)
 
+    local w, h = EditFrame:GetSize()
     GridPane:RenderPositions()
+    GridPane:SetSize(w, h - 25)
 
     --[[local ListPane = vgui.Create("DListLayout", EditFrame)
     ListPane:SetSize(EditFrame:GetSize())
