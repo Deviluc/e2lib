@@ -160,13 +160,14 @@ function GridPane:Init()
 	self.lastWidth, self.lastHeight = self:GetSize()
 	self.itemAdded = false
 
-	function GridPane:PerformLayout(...)
-		local w, h = self:GetSize()
-		if self.lastWidth != w or self.lastHeight != h or self.itemAdded then
-			self:RenderPositions()
-			self.lastWidth, self.lastHeight = self:GetSize()
-			itemAdded = false
-		end
+end
+
+function GridPane:PerformLayout(...)
+	local w, h = self:GetSize()
+	if self.lastWidth != w or self.lastHeight != h or self.itemAdded then
+		self:RenderPositions()
+		self.lastWidth, self.lastHeight = self:GetSize()
+		itemAdded = false
 	end
 end
 

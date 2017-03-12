@@ -116,10 +116,10 @@ function HBox:Init()
 
 	self:SetBackgroundColor(Color(0, 0, 0, 0))
 
-	function HBox:PerformLayout(...)
-		self:Render()
-	end
+end
 
+function HBox:PerformLayout(...)
+	self:Render()
 end
 
 function HBox:SetSpacing(spacing)
@@ -294,10 +294,10 @@ function VBox:Init()
 
 	self:SetBackgroundColor(Color(0, 0, 0, 0))
 
-	function VBox:PerformLayout(...)
-		self:Render()
-	end
+end
 
+function VBox:PerformLayout(...)
+	self:Render()
 end
 
 function VBox:SetSpacing(spacing)

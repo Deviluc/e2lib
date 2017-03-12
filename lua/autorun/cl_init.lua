@@ -302,6 +302,21 @@ local function createEditView(func)
     local RestrictedStringsBox = VBox.Create(GridPane, 0, 5, RestrictedEntsStringsLabel, 0, 0, RestrictedStringsList, 0, 0)
     GridPane:Add(RestrictedStringsBox, 2, 7, 1, 1, -1, -1)
 
+    local StringModelTextField = vgui.Create("DTextEntry", GridPane)
+    StringModelTextField:SetText("String/Entity model")
+    GridPane.setSize(StringModelTextField, 75, 300, 400, 20, 20, 20)
+
+    local StringAddButton = vgui.Create("DButton", GridPane)
+    StringAddButton:SetText("Add")
+    StringAddButton:SetSize(50, 20)
+
+    local StringRemoveButton = vgui.Create("DButton", GridPane)
+    StringRemoveButton:SetText("Remove")
+    StringRemoveButton:SetSize(50, 20)
+
+    local StringModelBox = HBox.Create(GridPane, 0, 5, StringModelTextField, -1, 0, StringAddButton, -1, 0, StringRemoveButton, -1, 0)
+    GridPane:Add(StringModelBox, 2, 8, 1, 1, -1, 0)
+
     local w, h = EditFrame:GetSize()
     GridPane:RenderPositions()
     GridPane:SetSize(w, h - 25)
