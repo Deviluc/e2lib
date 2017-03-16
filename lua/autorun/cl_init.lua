@@ -191,7 +191,7 @@ end
 local function createEditView(func)
     -- Edit view
     local EditFrame = vgui.Create("DFrame")
-    EditFrame:SetSize(875, 500)
+    EditFrame:SetSize(600, 500)
     EditFrame:Center()
     EditFrame:SetTitle("E2lib security")
     EditFrame:MakePopup()
@@ -211,7 +211,7 @@ local function createEditView(func)
         local w, h = self:GetSize()
 
         if self.lastWidth != w or self.lastHeight != h then
-            GridPane:SetSize(w, h - 25)
+            GridPane:SetSize(w, h - 30)
             GridPane:SetPos(0, 20)
             self.lastWidth, self.lastHeight = w, h
         end
@@ -297,7 +297,7 @@ local function createEditView(func)
     local RestrictedStringsList = vgui.Create("DListView", GridPane)
     RestrictedStringsList:SetMultiSelect(false)
     RestrictedStringsList:AddColumn("String / Entity model")
-    GridPane.setSize(RestrictedStringsList, 150, 800, 800, 50, 100, 400)
+    GridPane.setSize(RestrictedStringsList, 200, 400, 800, 100, 200, 400)
 
     local RestrictedStringsBox = VBox.Create(GridPane, 0, 5, RestrictedEntsStringsLabel, 0, 0, RestrictedStringsList, 0, 0)
     GridPane:Add(RestrictedStringsBox, 2, 7, 1, 1, -1, -1)
@@ -317,9 +317,24 @@ local function createEditView(func)
     local StringModelBox = HBox.Create(GridPane, 0, 5, StringModelTextField, -1, 0, StringAddButton, -1, 0, StringRemoveButton, -1, 0)
     GridPane:Add(StringModelBox, 2, 8, 1, 1, -1, 0)
 
+    local CancelButton = vgui.Create("DButton", GridPane)
+    CancelButton:SetText("Cancel")
+    CancelButton:SetSize(100, 20)
+
+    local ApplyButton = vgui.Create("DButton", GridPane)
+    ApplyButton:SetText("Apply")
+    ApplyButton:SetSize(100, 20)
+
+    local SaveButton = vgui.Create("DButton", GridPane)
+    SaveButton:SetText("Save")
+    SaveButton:SetSize(100, 20)
+
+    local SaveButtonBox = HBox.Create(GridPane, 5, 5, CancelButton, 1, 0, ApplyButton, 1, 0, SaveButton, 1, 0)
+    GridPane:Add(SaveButtonBox, 1, 9, 2, 1, 1, 1)
+
     local w, h = EditFrame:GetSize()
     GridPane:RenderPositions()
-    GridPane:SetSize(w, h - 25)
+    GridPane:SetSize(w, h - 30)
 
     --[[local ListPane = vgui.Create("DListLayout", EditFrame)
     ListPane:SetSize(EditFrame:GetSize())
